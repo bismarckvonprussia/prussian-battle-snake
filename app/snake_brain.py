@@ -1,4 +1,5 @@
 import random
+from enemy_snake import EnemySnake
 
 class SnakeBrain(object):
     """docstring for SnakeBrain."""
@@ -14,8 +15,11 @@ class SnakeBrain(object):
         self.possibleMoves = None
         self.head = None
         self.body = None
+        self.size = None
         self.enemySnakes = []
         self.snakeId = None
+
+        random.seed(1234)
 
     def initialize(self, game_data):
         print("Initializing snake brain")
@@ -36,47 +40,38 @@ class SnakeBrain(object):
         if self.head.y + 1 == self.boardHeight:
             self.possibleMoves.remove("down")
 
-    def eliminateSelfCollision(self):
+    def eliminateCollision(self, occupiedSegments):
         nextLeft = Coordinate(self.head.x - 1, self.head.y)
         nextRight = Coordinate(self.head.x + 1, self.head.y)
         nextUp = Coordinate(self.head.x, self.head.y - 1)
         nextDown = Coordinate(self.head.x, self.head.y + 1)
-        for bodyPart in self.body:
-            if nextLeft == bodyPart:
+        for segment in occupiedSegments:
+            if nextLeft == segment:
                 if "left" in self.possibleMoves: self.possibleMoves.remove("left")
-            if nextRight == bodyPart:
+            if nextRight == segment:
                 if "right" in self.possibleMoves: self.possibleMoves.remove("right")
-            if nextUp == bodyPart:
+            if nextUp == segment:
                 if "up" in self.possibleMoves: self.possibleMoves.remove("up")
-            if nextDown == bodyPart:
+            if nextDown == segment:
                 if "down" in self.possibleMoves: self.possibleMoves.remove("down")
 
-        if not self.possibleMoves:
-            for bodyPart in self.body:
-                print(str(bodyPart))
+    def eliminateSelfCollision(self):
+        self.eliminateCollision(self.body)
 
     def eliminateSnakeCollision(self):
-        print("*** eliminateSnakeCollision")
-        # TODO: handle head on collisions
-        # heads of enemy snakes are special case...
-        nextLeft = Coordinate(self.head.x - 1, self.head.y)
-        nextRight = Coordinate(self.head.x + 1, self.head.y)
-        nextUp = Coordinate(self.head.x, self.head.y - 1)
-        nextDown = Coordinate(self.head.x, self.head.y + 1)
-        for enemySnakeBody in self.enemySnakes:
-            for bodyPart in enemySnakeBody:
-                if nextLeft == bodyPart:
-                    if "left" in self.possibleMoves: self.possibleMoves.remove("left")
-                    print("eliminate left")
-                if nextRight == bodyPart:
-                    if "right" in self.possibleMoves: self.possibleMoves.remove("right")
-                    print("eliminate right")
-                if nextUp == bodyPart:
-                    if "up" in self.possibleMoves: self.possibleMoves.remove("up")
-                    print("elminate up")
-                if nextDown == bodyPart:
-                    if "down" in self.possibleMoves: self.possibleMoves.remove("down")
-                    print("eliminate down")
+        for enemySnake in self.enemySnakes:
+            self.eliminateCollision(enemySnake.body)
+
+    def eliminateLosingHeadOnCollision(self):
+        for enemySnake in self.enemySnakes:
+            if self.size > enemySnake.size: continue
+            enemyHeadNextLeft = enemySnake.head
+            dangerSegments = []
+            dangerSegments.append(Coordinate(enemySnake.head.x - 1, enemySnake.head.y))
+            dangerSegments.append(Coordinate(enemySnake.head.x + 1, enemySnake.head.y))
+            dangerSegments.append(Coordinate(enemySnake.head.x, enemySnake.head.y - 1))
+            dangerSegments.append(Coordinate(enemySnake.head.x, enemySnake.head.y + 1))
+            self.eliminateCollision(dangerSegments)
 
     def decideNextMove(self, game_data):
         self.possibleMoves = ['up', 'down', 'left', 'right']
@@ -88,21 +83,24 @@ class SnakeBrain(object):
         self.body = []
         for segment in game_data["you"]["body"]:
             self.body.append(Coordinate(segment["x"], segment["y"]))
+        self.size = len(self.body)
 
         self.enemySnakes = []
-        for enemySnake in game_data["board"]["snakes"]:
-            if enemySnake["id"] == self.snakeId: continue
-            enemySnakeBody = []
-            print("enemyId: {}".format(enemySnake["id"]))
-            print("enemySnake")
-            print(enemySnake["body"])
-            for segment in enemySnake["body"]:
-                enemySnakeBody.append(Coordinate(segment["x"], segment["y"]))
-            self.enemySnakes.append(enemySnakeBody)
+        for rawEnemeySnake in game_data["board"]["snakes"]:
+            if rawEnemeySnake["id"] == self.snakeId: continue
+            enemySnake = EnemySnake()
+            enemySnake.snakeId = rawEnemeySnake["id"]
+            enemySnake.head = Coordinate(rawEnemeySnake["body"][0]["x"], rawEnemeySnake["body"][0]["y"])
+            enemySnake.body = []
+            for segment in rawEnemeySnake["body"]:
+                enemySnake.body.append(Coordinate(segment["x"], segment["y"]))
+            enemySnake.size = len(enemySnake.body)
+            self.enemySnakes.append(enemySnake)
 
         self.eliminateBoardEdgeCollision()
         self.eliminateSelfCollision()
         self.eliminateSnakeCollision()
+        self.eliminateLosingHeadOnCollision()
 
         print("Head: " + str(self.head))
 
