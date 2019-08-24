@@ -73,6 +73,7 @@ class SnakeBrain(object):
         self.head = Coordinate(game_data["you"]["body"][0]["x"], game_data["you"]["body"][0]["y"])
 
         # head included in the body
+        self.body = []
         for segment in game_data["you"]["body"]:
             self.body.append(Coordinate(segment["x"], segment["y"]))
 
