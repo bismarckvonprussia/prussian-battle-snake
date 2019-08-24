@@ -19,7 +19,7 @@ class SnakeBrain(object):
         self.enemySnakes = []
         self.snakeId = None
 
-        random.seed(1234)
+        # random.seed(1234)
 
     def initialize(self, game_data):
         print("Initializing snake brain")
