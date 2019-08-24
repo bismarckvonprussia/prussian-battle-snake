@@ -43,7 +43,13 @@ def start():
 
     color = "#00FF00"
 
-    return start_response(color)
+    startResp = {
+            	"color": "#736CCB",
+            	"headType": "beluga",
+            	"tailType": "curled"
+                }
+
+    return start_response(startResp)
 
 
 @bottle.post('/move')
