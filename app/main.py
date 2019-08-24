@@ -46,7 +46,7 @@ def start():
 
     snake_brain.initialize(data)
 
-    color = "#FFFFFF"
+    color = "#003153"
 
     return start_response(color)
 
