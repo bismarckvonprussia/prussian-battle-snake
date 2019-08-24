@@ -5,6 +5,8 @@ import bottle
 
 from api import ping_response, start_response, move_response, end_response
 
+from snake_brain import SnakeBrain
+
 @bottle.route('/')
 def index():
     return '''
@@ -39,8 +41,10 @@ def start():
             initialize your snake state here using the
             request's data if necessary.
     """
-    print("### start()")
+    print("Initial game state:")
     print(json.dumps(data))
+
+    snake_brain.initialize(data)
 
     color = "#FFFFFF"
 
@@ -55,12 +59,11 @@ def move():
     TODO: Using the data from the endpoint request object, your
             snake AI must choose a direction to move in.
     """
-    print("### move()")
-    print(json.dumps(data))
-
     # directions = ['up', 'down', 'left', 'right']
-    directions = ['right']
-    direction = random.choice(directions)
+    # directions = ['right']
+    # direction = random.choice(directions)
+
+    direction = snake_brain.decideNextMove(data)
 
     return move_response(direction)
 
@@ -73,13 +76,17 @@ def end():
     TODO: If your snake AI was stateful,
         clean up any stateful objects here.
     """
-    print("### end()")
-    print(json.dumps(data))
+    # print("### end()")
+    # print(json.dumps(data))
+
+    print("##### GAME OVER #####")
 
     return end_response()
 
 # Expose WSGI app (so gunicorn can find it)
 application = bottle.default_app()
+
+snake_brain = SnakeBrain()
 
 if __name__ == '__main__':
     bottle.run(
