@@ -15,6 +15,8 @@ class SnakeBrain(object):
         self.head = None
         self.body = []
 
+        random.seed(1234)
+
     def initialize(self, game_data):
         print("Initializing snake brain")
         self.boardWidth = game_data["board"]["width"]
@@ -40,23 +42,31 @@ class SnakeBrain(object):
 
     def eliminateSelfCollision(self):
         print("eliminateSelfCollision")
-        nextLeft = self.head.x - 1
-        nextRight = self.head.x + 1
-        nextUp = self.head.y - 1
-        nextDown = self.head.y + 1
+        nextLeft = Coordinate(self.head.x - 1, self.head.y)
+        nextRight = Coordinate(self.head.x + 1, self.head.y)
+        nextUp = Coordinate(self.head.x, self.head.y - 1)
+        nextDown = Coordinate(self.head.x, self.head.y + 1)
+        print("nextLeft: {}".format(str(nextLeft)))
+        print("nextRight: {}".format(str(nextRight)))
+        print("nextUp: {}".format(str(nextUp)))
+        print("nextDown: {}".format(str(nextDown)))
         for bodyPart in self.body:
-            if nextLeft == bodyPart.x:
+            if nextLeft == bodyPart:
                 if "left" in self.possibleMoves: self.possibleMoves.remove("left")
                 print("eliminate left")
-            if nextRight == bodyPart.x:
+            if nextRight == bodyPart:
                 if "right" in self.possibleMoves: self.possibleMoves.remove("right")
                 print("eliminate right")
-            if nextUp == bodyPart.y:
+            if nextUp == bodyPart:
                 if "up" in self.possibleMoves: self.possibleMoves.remove("up")
                 print("elminate up")
-            if nextDown == bodyPart.y:
+            if nextDown == bodyPart:
                 if "down" in self.possibleMoves: self.possibleMoves.remove("down")
                 print("eliminate down")
+
+        if not self.possibleMoves:
+            for bodyPart in self.body:
+                print(str(bodyPart))
 
     def decideNextMove(self, game_data):
         self.possibleMoves = ['up', 'down', 'left', 'right']
@@ -69,6 +79,7 @@ class SnakeBrain(object):
         self.eliminateBoardEdgeCollision()
         self.eliminateSelfCollision()
 
+        print("Head: " + str(self.head))
         # print("(^)")
         # for bodyPart in self.body:
         #     print(str(bodyPart))
@@ -89,6 +100,9 @@ class Coordinate(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
 
     def __str__(self):
         return "{0},{1}".format(self.x, self.y)
