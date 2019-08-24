@@ -15,8 +15,6 @@ class SnakeBrain(object):
         self.head = None
         self.body = []
 
-        random.seed(1234)
-
     def initialize(self, game_data):
         print("Initializing snake brain")
         self.boardWidth = game_data["board"]["width"]
@@ -26,7 +24,7 @@ class SnakeBrain(object):
         print("Board Height: {}".format(self.boardHeight))
 
     def eliminateBoardEdgeCollision(self):
-        print("eliminateBoardEdgeCollision")
+        print("*** eliminateBoardEdgeCollision")
         if self.head.x - 1 < 0:
             self.possibleMoves.remove("left")
             print("eliminate left")
@@ -41,7 +39,7 @@ class SnakeBrain(object):
             print("eliminate down")
 
     def eliminateSelfCollision(self):
-        print("eliminateSelfCollision")
+        print("*** eliminateSelfCollision")
         nextLeft = Coordinate(self.head.x - 1, self.head.y)
         nextRight = Coordinate(self.head.x + 1, self.head.y)
         nextUp = Coordinate(self.head.x, self.head.y - 1)
@@ -81,12 +79,6 @@ class SnakeBrain(object):
         self.eliminateSelfCollision()
 
         print("Head: " + str(self.head))
-        # print("(^)")
-        # for bodyPart in self.body:
-        #     print(str(bodyPart))
-        # print("(!)")
-
-        # return "down"
 
         if not self.possibleMoves:
             self.turnsDoomed += 1
