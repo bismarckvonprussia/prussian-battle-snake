@@ -41,13 +41,13 @@ def start():
     """
     print(json.dumps(data))
 
-    color = "#00FF00"
+    color = "#FFFFFF"
 
-    startResp = {
-            	"color": "#736CCB",
-            	"headType": "beluga",
-            	"tailType": "curled"
-                }
+    # startResp = {
+    #         	"color": "#736CCB",
+    #         	"headType": "beluga",
+    #         	"tailType": "curled"
+    #             }
 
     return start_response(startResp)
 
