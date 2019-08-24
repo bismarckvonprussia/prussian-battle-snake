@@ -4,11 +4,13 @@ class SnakeBrain(object):
     """docstring for SnakeBrain."""
 
     def __init__(self):
+        self.debug = True
         # Game meta
         self.boardHeight = None
         self.boardWidth = None
 
         # Snake variables
+        self.turnsDoomed = 0
         self.possibleMoves = None
         self.head = None
         self.body = []
@@ -22,16 +24,22 @@ class SnakeBrain(object):
         print("Board Height: {}".format(self.boardHeight))
 
     def eliminateBoardEdgeCollision(self):
+        print("eliminateBoardEdgeCollision")
         if self.head.x - 1 < 0:
             self.possibleMoves.remove("left")
+            print("eliminate left")
         if self.head.x + 1 == self.boardWidth:
             self.possibleMoves.remove("right")
+            print("eliminate right")
         if self.head.y - 1 < 0:
             self.possibleMoves.remove("up")
+            print("eliminate up")
         if self.head.y + 1 == self.boardHeight:
             self.possibleMoves.remove("down")
+            print("eliminate down")
 
     def eliminateSelfCollision(self):
+        print("eliminateSelfCollision")
         nextLeft = self.head.x - 1
         nextRight = self.head.x + 1
         nextUp = self.head.y - 1
@@ -39,12 +47,16 @@ class SnakeBrain(object):
         for bodyPart in self.body:
             if nextLeft == bodyPart.x:
                 if "left" in self.possibleMoves: self.possibleMoves.remove("left")
+                print("eliminate left")
             if nextRight == bodyPart.x:
                 if "right" in self.possibleMoves: self.possibleMoves.remove("right")
+                print("eliminate right")
             if nextUp == bodyPart.y:
                 if "up" in self.possibleMoves: self.possibleMoves.remove("up")
+                print("elminate up")
             if nextDown == bodyPart.y:
                 if "down" in self.possibleMoves: self.possibleMoves.remove("down")
+                print("eliminate down")
 
     def decideNextMove(self, game_data):
         self.possibleMoves = ['up', 'down', 'left', 'right']
@@ -57,8 +69,16 @@ class SnakeBrain(object):
         self.eliminateBoardEdgeCollision()
         self.eliminateSelfCollision()
 
+        # print("(^)")
+        # for bodyPart in self.body:
+        #     print(str(bodyPart))
+        # print("(!)")
+
+        # return "down"
+
         if not self.possibleMoves:
-            print("DOOM!!!")
+            self.turnsDoomed += 1
+            print("DOOM!!! {0}".format(self.turnsDoomed))
             return "right"
 
         nextMove = random.choice(self.possibleMoves)
