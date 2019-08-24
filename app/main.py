@@ -39,17 +39,12 @@ def start():
             initialize your snake state here using the
             request's data if necessary.
     """
+    print("### start()")
     print(json.dumps(data))
 
     color = "#FFFFFF"
 
-    # startResp = {
-    #         	"color": "#736CCB",
-    #         	"headType": "beluga",
-    #         	"tailType": "curled"
-    #             }
-
-    return start_response(startResp)
+    return start_response(color)
 
 
 @bottle.post('/move')
@@ -60,6 +55,7 @@ def move():
     TODO: Using the data from the endpoint request object, your
             snake AI must choose a direction to move in.
     """
+    print("### move()")
     print(json.dumps(data))
 
     # directions = ['up', 'down', 'left', 'right']
@@ -77,6 +73,7 @@ def end():
     TODO: If your snake AI was stateful,
         clean up any stateful objects here.
     """
+    print("### end()")
     print(json.dumps(data))
 
     return end_response()
@@ -88,6 +85,6 @@ if __name__ == '__main__':
     bottle.run(
         application,
         host=os.getenv('IP', '0.0.0.0'),
-        port=os.getenv('PORT', '8080'),
+        port=os.getenv('PORT', '3011'),
         debug=os.getenv('DEBUG', True)
     )
