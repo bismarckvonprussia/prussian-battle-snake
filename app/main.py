@@ -2,6 +2,7 @@ import json
 import os
 import random
 import bottle
+import argparse
 
 from api import ping_response, start_response, move_response, end_response
 
@@ -89,9 +90,13 @@ application = bottle.default_app()
 snake_brain = SnakeBrain()
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', action="store", required=True)
+    args = parser.parse_args()
+
     bottle.run(
         application,
         host=os.getenv('IP', '0.0.0.0'),
-        port=os.getenv('PORT', '3011'),
+        port=os.getenv('PORT', args.p),
         debug=os.getenv('DEBUG', True)
     )
