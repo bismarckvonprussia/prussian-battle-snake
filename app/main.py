@@ -62,7 +62,8 @@ def move():
     """
     print(json.dumps(data))
 
-    directions = ['up', 'down', 'left', 'right']
+    # directions = ['up', 'down', 'left', 'right']
+    directions = ['right']
     direction = random.choice(directions)
 
     return move_response(direction)
